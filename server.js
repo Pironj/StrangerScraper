@@ -26,11 +26,28 @@ app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
 
+// Set Handlebars.
+var exphbs = require("express-handlebars");
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
 // Connect to the Mongo DB
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/strangerHeadlines";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 // Routes
+
+// A GET route for loading the home page with db articles
+app.get("/", function(req, res) {
+  db.Article.find({ "saved": false }, function(error, data) {
+    var hbsOjbject = {
+      article: data
+    };
+    console.log("Home Route success" + hbsOjbject);
+    res.render("home", hbsOjbject);
+  });
+});
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {

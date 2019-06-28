@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/css/burger_style.css" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <title>Stranger Scraper</title>
+</head>
+<body>
+  <!-- Image and text -->
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/">
+    <img src="/img/icon.png" width="30" height="30" class="d-inline-block align-top" alt="">
+    The Stranger Scraper
+  </a>
+  <ul class="nav nav-pills">
+  <li class="nav-item">
+    <a class="nav-link" href="/">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="/saved">Saved</a>
+  </li>
+  <li class="nav-item">
+    <button type="button" class="btn btn-primary" id="scrapeBtn">Scrape the Stranger</button>
+  </li>
+</ul>
+</nav>
+  <div class="container">
+    <center>
+  {{{ body }}}
+
+    </center>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+<footer>
+    <div class="container" id="footertext">github.com/Pironj ©</div>
+</footer>
+</html>
