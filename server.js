@@ -27,29 +27,61 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/strangerHeadlines";
 
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 // Routes
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
-  axios.get("http://www.echojs.com/").then(function(response) {
+  axios.get("https://www.thestranger.com/features").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
+    
+    // An empty array to save the data that we'll scrape
+    // var results = [];
 
+    // varibale to specify unique class for article div
+    var articleClass = "div" + ".row" + ".article" + ".follow";
     // Now, we grab every h2 within an article tag, and do the following:
-    $("article h2").each(function(i, element) {
+    $(articleClass).each(function(i, element) {
       // Save an empty result object
       var result = {};
+      // define all our properties of our object
+      // var img = $(element).children().find("div.image-container").find("img").attr("src");
+      // var title = $(element).children().find("h2.headline").text().split("\n      ")[1];
+      // var summary = $(element).children().find("h3.subheadline").text().split("\n        ")[1].split("\n    ")[0];
+      // var link = $(element).children().find("a").attr("href");
 
-      // Add the text and href of every link, and save them as properties of the result object
+      result.img = $(this)
+        .children()
+        .find("div.image-container")
+        .find("img")
+        .attr("src");
       result.title = $(this)
-        .children("a")
-        .text();
+        .children()
+        .find("h2.headline")
+        .text()
+        .split("\n      ")[1];
+      result.summary = $(this)
+        .children()
+        .find("h3.subheadline")
+        .text()
+        .split("\n        ")[1]
+        .split("\n    ")[0];
       result.link = $(this)
-        .children("a")
+        .children()
+        .find("a")
         .attr("href");
+
+      // Save these in an object that we'll push into the results array we defined earlier
+      // result.push({
+      //   img: img,
+      //   title: title,
+      //   summary: summary,
+      //   link: link
+      // });
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
@@ -62,7 +94,7 @@ app.get("/scrape", function(req, res) {
           console.log(err);
         });
     });
-
+  
     // Send a message to the client
     res.send("Scrape Complete");
   });
