@@ -35,7 +35,7 @@ app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 mongoose.set('useFindAndModify', false);
-var MONGODB_URI = "mongodb://heroku_3r17pc0g:s5651051vc1ips9b6g2bc9ao2j@ds221405.mlab.com:21405/heroku_3r17pc0g" || "mongodb://localhost/strangerHeadlines";
+var MONGODB_URI = "mongodb://heroku_rsfln97w:82li6j3bm0g37lg838ueara712@ds111492.mlab.com:11492/heroku_rsfln97w" || "mongodb://localhost/strangerHeadlines";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 // Routes
