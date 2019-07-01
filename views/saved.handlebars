@@ -1,0 +1,66 @@
+<div id="wrapper">
+  <h1>Saved Articles</h1>
+  <h2><i>Here are the articles:</i></h2>
+  <div id="articles">
+    {{#if article}}
+      {{#each article}}
+      <div class="card mb-3" style="">
+        <div class="row no-gutters">
+          <div class="col-md-4">
+            <img src={{this.img}} class="card-img" alt="articledb_img">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{this.title}}</h5>
+              <p class="card-text">{{this.summary}}</p>
+              <br>
+              <span>
+              <a href={{this.link}} class="btn btn-primary" target="_blank">View Article</a>
+              <button type="button" class="btn btn-primary" id="saveNote" data-id={{this._id}} data-article-id={{this._id}} data-target="#deleteBtn">Add Note</button>
+              <button type="button" class="btn btn-danger" id="deleteArticle" data-id={{this._id}}>Remove Article</button>
+              <!-- Button trigger modal -->
+              {{!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#noteModal">
+                Save Note
+              </button> --}}
+
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer text-muted">
+          {{#if note}}
+            {{#each note}}
+                <p><strong>{{this.title}}: </strong>  {{this.body}}    <button class='delete btn btn-danger btn-sm' id="deleteBtn" data-note-id="{{this._id}}" data-article-id={{article._id}}><string>x</string></button></p>
+                <br>
+            {{/each}}
+          {{/if}}
+        </div>
+      </div>
+      {{/each}}
+    {{/if}}
+  </div>
+  <div id="notes">
+
+    {{!-- <!-- Modal -->
+    <div class="modal fade" id="noteModal{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="noteModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{#if this.note}}
+              {{#each this.note}}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div> --}}
+  </div>
+</div>

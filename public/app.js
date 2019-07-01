@@ -8,10 +8,31 @@
 //     $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].summary + "<br />" + data[i].link + "</p>");
 //   }
 // });
+$(document).on("click", "#saveArticle", function() {
+  var thisId = $(this).attr("data-id");
+  $.ajax({
+    method: "POST",
+    url: "/articles/saved/" + thisId
+  })
+  .done(function(data) {
+    console.log(data);
+    window.location = "/";
+  });
+});
+$(document).on("click", "#deleteArticle", function() {
+  var thisId = $(this).attr("data-id");
+  $.ajax({
+    method: "POST",
+    url: "/articles/delete/" + thisId
+  })
+  .done(function(data) {
+    console.log(data);
+    window.location = "/saved";
+  });
+});
 
-
-// Whenever someone clicks a p tag
-$(document).on("click", "p", function() {
+// Whenever someone clicks Add Note button
+$(document).on("click", "#saveNote", function() {
   // Empty the notes from the note section
   $("#notes").empty();
   // Save the id from the p tag
@@ -43,7 +64,7 @@ $(document).on("click", "p", function() {
       }
     });
 });
-
+// Route to handle saving notes
 // When you click the savenote button
 $(document).on("click", "#savenote", function() {
   // Grab the id associated with the article from the submit button
@@ -52,7 +73,7 @@ $(document).on("click", "#savenote", function() {
   // Run a POST request to change the note, using what's entered in the inputs
   $.ajax({
     method: "POST",
-    url: "/articles/" + thisId,
+    url: "/note/save/" + thisId,
     data: {
       // Value taken from title input
       title: $("#titleinput").val(),
@@ -66,9 +87,25 @@ $(document).on("click", "#savenote", function() {
       console.log(data);
       // Empty the notes section
       $("#notes").empty();
+      window.location = "/saved";
     });
 
   // Also, remove the values entered in the input and textarea for note entry
   $("#titleinput").val("");
   $("#bodyinput").val("");
+});
+
+// Delete Note function event
+$(document).on("click", "#deleteBtn", function() {
+  var noteId = $(this).attr("data-note-id");
+  // var articleId = $(this.article).attr("data-article-id");
+  // var thisId = $(this).attr("data-id");
+  $.ajax({
+    method: "POST",
+    url: "/note/delete/" + noteId
+  })
+  .done(function(result) {
+    console.log(result);
+    window.location = "/saved";
+  });
 });

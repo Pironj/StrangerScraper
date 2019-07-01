@@ -33,6 +33,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
+mongoose.set('useFindAndModify', false);
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/strangerHeadlines";
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
@@ -41,12 +42,33 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 // A GET route for loading the home page with db articles
 app.get("/", function(req, res) {
   db.Article.find({ "saved": false }, function(error, data) {
-    var hbsOjbject = {
+    console.log(data);
+    if (error) {
+      console.log(error)
+    }
+    var hbsObject = {
       article: data
     };
-    console.log("Home Route success" + hbsOjbject);
-    res.render("home", hbsOjbject);
+    console.log("Home Route success");
+    res.render("home", hbsObject);
   });
+});
+
+// Get route to display saved articles on saved.handlebars page
+app.get("/saved", function(req, res) {
+  db.Article.find({ "saved": true }, function(error, data) {
+      if (error) {
+        console.log(error);
+      }
+    })
+    .populate("note")
+    .then(function(data){
+      console.log(data);
+      var hbsObject = {
+        article: data
+      };
+      res.render("saved", hbsObject);
+    });
 });
 
 // A GET route for scraping the echoJS website
@@ -55,7 +77,7 @@ app.get("/scrape", function(req, res) {
   axios.get("https://www.thestranger.com/features").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
-    
+    console.log($);
     // An empty array to save the data that we'll scrape
     // var results = [];
 
@@ -66,11 +88,6 @@ app.get("/scrape", function(req, res) {
       // Save an empty result object
       var result = {};
       // define all our properties of our object
-      // var img = $(element).children().find("div.image-container").find("img").attr("src");
-      // var title = $(element).children().find("h2.headline").text().split("\n      ")[1];
-      // var summary = $(element).children().find("h3.subheadline").text().split("\n        ")[1].split("\n    ")[0];
-      // var link = $(element).children().find("a").attr("href");
-
       result.img = $(this)
         .children()
         .find("div.image-container")
@@ -93,12 +110,6 @@ app.get("/scrape", function(req, res) {
         .attr("href");
 
       // Save these in an object that we'll push into the results array we defined earlier
-      // result.push({
-      //   img: img,
-      //   title: title,
-      //   summary: summary,
-      //   link: link
-      // });
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
@@ -113,8 +124,8 @@ app.get("/scrape", function(req, res) {
     });
   
     // Send a message to the client
-    res.send("Scrape Complete");
   });
+  res.redirect("/");
 });
 
 // Route for getting all Articles from the db
@@ -147,15 +158,39 @@ app.get("/articles/:id", function(req, res) {
     });
 });
 
+// route to updated saved boolean to true
+app.post("/articles/saved/:id", function(req, res) {
+  db.Article.findOneAndUpdate({ "_id": req.params.id }, {$set: { "saved": true }})
+  .then(function(error, data) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.json(data);
+    }
+  });
+  res.render("home");
+});
+// route to updated saved boolean to true
+app.post("/articles/delete/:id", function(req, res) {
+  db.Article.findOneAndUpdate({ "_id": req.params.id }, {$set: {"saved": false}}
+  // db.Note.find
+  )
+  .then(function(error, data) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.json(data);
+    }
+  });
+  res.render("saved");
+});
+
 // Route for saving/updating an Article's associated Note
-app.post("/articles/:id", function(req, res) {
-  // Create a new note and pass the req.body to the entry
+app.post("/note/save/:id", function(req, res) {
   db.Note.create(req.body)
     .then(function(dbNote) {
-      // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
-      // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
-      // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+      console.log(dbNote);
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, {$push: { note: dbNote }}, { new: true });
     })
     .then(function(dbArticle) {
       // If we were able to successfully update an Article, send it back to the client
@@ -165,6 +200,25 @@ app.post("/articles/:id", function(req, res) {
       // If an error occurred, send it to the client
       res.json(err);
     });
+});
+// Delete note from article route
+app.post("/note/delete/:noteId", function(req, res) {
+  db.Note.findOneAndRemove({ _id: req.params.noteId }, function(error, res) {
+    if (error) {
+      console.log(error);
+      res.send(error);
+    } else {
+      db.Article.findOneAndUpdate({ "note": req.params.noteId }, { $pull: {"note": req.params.noteId } })
+      .then(function(error) {
+        if (error) {
+          console.log(error);
+        } else {
+          res.send("Delete Successful");
+        }
+      })
+    }
+  });
+  res.render("saved");
 });
 
 // Start the server

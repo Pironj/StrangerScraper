@@ -1,4 +1,4 @@
-<style>
+{{!-- <style>
   body { background-color: #F2F6D0 }
   #wrapper {
     width: 960px;
@@ -29,7 +29,7 @@
     height: 200px;
     font-size: 18px;
   }
-</style>
+</style> --}}
 
 <div id="wrapper">
   <h1>All the strangness thats fit to Scrape</h1>
@@ -46,18 +46,21 @@
             <div class="card-body">
               <h5 class="card-title">{{this.title}}</h5>
               <p class="card-text">{{this.summary}}</p>
-              <a href={{this.link}} target="_blank">{{this.link}}</a>
-              <a href="#" class="btn btn-primary" data-id={{this._id}}>Save Article</a>
+              <br>
+              <span>
+              <a href={{this.link}} class="btn btn-primary" target="_blank">View Article</a>
+              <button type="button" class="btn btn-primary" id="saveArticle" data-id="{{this._id}}">Save Article</button>
+              </span>
             </div>
           </div>
         </div>
       </div>
       {{/each}}
-      {{else}}
+    {{/if}}
+      {{!-- {{else}}
       <div>
         <h2>No new articles</h2>
-      </div>
-    {{/if}}
+      </div> --}}
   </div>
   <div id="notes"></div>
 </div>
