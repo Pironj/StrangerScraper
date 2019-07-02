@@ -171,10 +171,12 @@ app.post("/articles/saved/:id", function(req, res) {
   res.render("home");
 });
 // route to updated saved boolean to true
-app.post("/articles/delete/:id", function(req, res) {
-  db.Article.findOneAndUpdate({ "_id": req.params.id }, {$set: {"saved": false}}
-  // db.Note.find
-  )
+app.delete("/articles/delete/:id", function(req, res) {
+  db.Article.findOneAndUpdate({ "_id": req.params.id }, {$set: {"saved": false}}, function(error, res) {
+    if(error) {
+      console.log(error);
+    }
+  })
   .then(function(error, data) {
     if (error) {
       console.log(error);
@@ -202,7 +204,7 @@ app.post("/note/save/:id", function(req, res) {
     });
 });
 // Delete note from article route
-app.post("/note/delete/:noteId", function(req, res) {
+app.delete("/note/delete/:noteId", function(req, res) {
   db.Note.findOneAndRemove({ _id: req.params.noteId }, function(error, res) {
     if (error) {
       console.log(error);

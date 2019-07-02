@@ -22,7 +22,7 @@ $(document).on("click", "#saveArticle", function() {
 $(document).on("click", "#deleteArticle", function() {
   var thisId = $(this).attr("data-id");
   $.ajax({
-    method: "POST",
+    method: "DELETE",
     url: "/articles/delete/" + thisId
   })
   .done(function(data) {
@@ -101,7 +101,7 @@ $(document).on("click", "#deleteBtn", function() {
   // var articleId = $(this.article).attr("data-article-id");
   // var thisId = $(this).attr("data-id");
   $.ajax({
-    method: "POST",
+    method: "DELETE",
     url: "/note/delete/" + noteId
   })
   .done(function(result) {
